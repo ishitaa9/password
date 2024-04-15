@@ -2,14 +2,21 @@ import { Injectable } from '@angular/core';
 import * as cryptoJS from 'crypto-js';
 import { Password } from './password-list/password-list.component';
 
+
+const secretKey = cryptoJS.lib.WordArray.random(16).toString();
+console.log("Generated Secret Key:", secretKey);
+
+
 @Injectable({
   providedIn: 'root'
 })
 export class PasswordStoreService {
   private localStorageKey = 'passwords';
   private passwordStore: Password[] = [];
+  private secretKey: string;
 
   constructor() {
+    this.secretKey = secretKey;
     // Check if localStorage is available
     if (this.isLocalStorageAvailable()) {
       // Initialize the password store from local storage on service instantiation
@@ -79,7 +86,7 @@ export class PasswordStoreService {
 
   encryptPassword(password: string): string {
     try {
-      return cryptoJS.enc.Base64.stringify(cryptoJS.enc.Utf8.parse(password));
+      return cryptoJS.AES.encrypt(password, this.secretKey).toString();
     } catch (error) {
       throw new Error("Error encrypting password: " + (error as Error).message);
     }
@@ -87,7 +94,9 @@ export class PasswordStoreService {
 
   decryptPassword(encryptedPassword: string): string {
     try {
-      return cryptoJS.enc.Utf8.stringify(cryptoJS.enc.Base64.parse(encryptedPassword));
+      console.log(cryptoJS.AES.decrypt(encryptedPassword, this.secretKey), encryptedPassword)
+      const bytes = cryptoJS.AES.decrypt(encryptedPassword, this.secretKey);
+      return bytes.toString(cryptoJS.enc.Utf8);
     } catch (error) {
       throw new Error("Error decrypting password: " + (error as Error).message);
     }

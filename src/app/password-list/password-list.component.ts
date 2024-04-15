@@ -12,7 +12,6 @@ export interface Password {
   isEditing: boolean;
 }
 
-
 @Component({
   selector: 'app-password-list',
   templateUrl: './password-list.component.html',
@@ -46,26 +45,26 @@ export class PasswordListComponent implements OnInit {
   }
 
   editPassword(password: Password): void {
-  // Decrypt the password before editing and store it in decryptedPassword property
-  password.decryptedPassword = this.passwordService.decryptPassword(password.encryptedPassword);
-  // Set the password field to display the decrypted password
-  this.password = password.decryptedPassword;
-  password.isEditing = true;
-}
+    // Decrypt the password before editing and store it in decryptedPassword property
+    password.decryptedPassword = this.passwordService.decryptPassword(password.encryptedPassword);
+    // Set the password field to display the decrypted password
+    this.password = password.decryptedPassword || '';
+    password.isEditing = true;
+  }
 
   savePassword(password: Password): void {
-    // You can add validation logic here if needed
     password.isEditing = false;
     // Re-encrypt the password after editing
-    password.encryptedPassword = this.passwordService.encryptPassword(password.encryptedPassword);
-    // Update the password in the store (if needed)
+    password.encryptedPassword = this.passwordService.encryptPassword(this.password);
+    // Update the decrypted password with the original password value
+    password.decryptedPassword = this.password;
+    // Update the password in the store
     this.passwordService.update(password);
   }
 
   cancelEdit(password: Password): void {
     password.isEditing = false;
   }
-
 
   deletePassword(id: string): void {
     try {
@@ -76,10 +75,8 @@ export class PasswordListComponent implements OnInit {
     }
   }
 
-
   addPassword(): void {
     if (!this.validateInputs()) {
-      // Handle validation error
       this.errorMessage = 'Please fill out all fields.';
       return;
     }
@@ -96,7 +93,7 @@ export class PasswordListComponent implements OnInit {
       };
 
       this.passwordService.add(newPassword);
-      // this.loadPasswords();
+      this.loadPasswords();
       this.clearInputs();
     } catch (error: any) {
       this.handleError("Error adding password: " + error.message);
@@ -117,7 +114,6 @@ export class PasswordListComponent implements OnInit {
 
   private handleError(message: string): void {
     console.error(message);
-    // You can implement error handling logic here, e.g., displaying an error message to the user
   }
 
   getPasswordsByApp(): void {
