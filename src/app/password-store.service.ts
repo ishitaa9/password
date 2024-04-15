@@ -10,7 +10,9 @@ export class PasswordStoreService {
   private passwordStore: Password[] = [];
 
   constructor() {
+    // Check if localStorage is available
     if (this.isLocalStorageAvailable()) {
+      // Initialize the password store from local storage on service instantiation
       const storedPasswords = localStorage.getItem(this.localStorageKey);
       if (storedPasswords) {
         this.passwordStore = JSON.parse(storedPasswords);
@@ -54,9 +56,9 @@ export class PasswordStoreService {
     }
   }
 
-  delete(id: number): void {
+  delete(id: string): void {
     try {
-      this.passwordStore = this.passwordStore.filter(password => password.id !== id.toString());
+      this.passwordStore = this.passwordStore.filter(password => password.id !== id);
       this.saveToLocalStorage();
     } catch (error) {
       throw new Error("Error deleting password: " + (error as Error).message);
@@ -66,8 +68,10 @@ export class PasswordStoreService {
   update(password: Password): void {
     const index = this.passwordStore.findIndex(p => p.id === password.id);
     if (index !== -1) {
+      // Decrypt the password before editing
       password.encryptedPassword = this.decryptPassword(password.encryptedPassword);
       this.passwordStore[index] = password;
+      // Re-encrypt the password after editing
       this.passwordStore[index].encryptedPassword = this.encryptPassword(password.encryptedPassword);
       this.saveToLocalStorage();
     }
