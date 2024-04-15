@@ -46,18 +46,14 @@ export class PasswordListComponent implements OnInit {
   }
 
   editPassword(password: Password): void {
-    // Decrypt the password before editing and store it in decryptedPassword property
     password.decryptedPassword = this.passwordService.decryptPassword(password.encryptedPassword);
     this.password = password.decryptedPassword;
     password.isEditing = true;
   }
 
   savePassword(password: Password): void {
-    // You can add validation logic here if needed
     password.isEditing = false;
-    // Re-encrypt the password after editing
     password.encryptedPassword = this.passwordService.encryptPassword(password.encryptedPassword);
-    // Update the password in the store (if needed)
     this.passwordService.update(password);
   }
 
@@ -69,7 +65,7 @@ export class PasswordListComponent implements OnInit {
   deletePassword(id: string): void {
     try {
       this.passwordService.delete(parseInt(id, 10));
-      this.loadPasswords(); // Reload passwords after deletion
+      this.loadPasswords();
     } catch (error: any) {
       this.handleError("Error deleting password: " + error.message);
     }
@@ -78,7 +74,6 @@ export class PasswordListComponent implements OnInit {
 
   addPassword(): void {
     if (!this.validateInputs()) {
-      // Handle validation error
       this.errorMessage = 'Please fill out all fields.';
       return;
     }
@@ -95,7 +90,6 @@ export class PasswordListComponent implements OnInit {
       };
 
       this.passwordService.add(newPassword);
-      // this.loadPasswords();
       this.clearInputs();
     } catch (error: any) {
       this.handleError("Error adding password: " + error.message);
@@ -116,7 +110,6 @@ export class PasswordListComponent implements OnInit {
 
   private handleError(message: string): void {
     console.error(message);
-    // You can implement error handling logic here, e.g., displaying an error message to the user
   }
 
   getPasswordsByApp(): void {
