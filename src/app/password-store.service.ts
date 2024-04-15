@@ -47,8 +47,10 @@ export class PasswordStoreService {
   add(password: Password): void {
     try {
       const encryptedPassword = this.encryptPassword(password.encryptedPassword);
+       // Store the original decrypted password
+      const originalDecryptedPassword = this.decryptPassword(password.encryptedPassword);
       password.encryptedPassword = encryptedPassword;
-      password.decryptedPassword = password.encryptedPassword;
+      password.decryptedPassword = originalDecryptedPassword;
       this.passwordStore.push(password);
       this.saveToLocalStorage();
     } catch (error) {

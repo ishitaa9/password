@@ -54,10 +54,12 @@ export class PasswordListComponent implements OnInit {
 
   savePassword(password: Password): void {
     password.isEditing = false;
+    // Store the original decrypted password
+    const originalDecryptedPassword = this.password;
     // Re-encrypt the password after editing
     password.encryptedPassword = this.passwordService.encryptPassword(this.password);
     // Update the decrypted password with the original password value
-    password.decryptedPassword = this.password;
+    password.decryptedPassword = originalDecryptedPassword;
     // Update the password in the store
     this.passwordService.update(password);
   }
@@ -82,6 +84,7 @@ export class PasswordListComponent implements OnInit {
     }
 
     try {
+      const decryptedPassword = this.passwordService.decryptPassword(this.password);;
       const encryptedPassword = this.passwordService.encryptPassword(this.password);
       const newPassword: Password = {
         id: uuidv4(),
@@ -89,6 +92,7 @@ export class PasswordListComponent implements OnInit {
         app: this.app,
         userName: this.userName,
         encryptedPassword,
+        decryptedPassword,
         isEditing: false,
       };
 
