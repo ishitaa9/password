@@ -10,6 +10,7 @@ export interface Password {
   encryptedPassword: string;
   decryptedPassword?: string;
   isEditing: boolean;
+  originalDecryptedPassword?: string;
 }
 
 @Component({

@@ -78,14 +78,14 @@ export class PasswordStoreService {
   update(password: Password): void {
     const index = this.passwordStore.findIndex(p => p.id === password.id);
     if (index !== -1) {
-      // Decrypt the password before editing
-      password.decryptedPassword = this.decryptPassword(password.encryptedPassword);
-      // Store the decrypted password
-      const decryptedPassword = password.decryptedPassword;
-      // this.passwordStore[index] = password;
-      // Re-encrypt the password after editing
-      password.encryptedPassword = this.encryptPassword(decryptedPassword);
-      this.passwordStore[index] = password;
+      // Update the password object in the array with the new values
+      this.passwordStore[index] = {
+        ...password,
+        encryptedPassword: this.encryptPassword(password.decryptedPassword || ''),
+        // decryptedPassword: password.decryptedPassword || ''
+        decryptedPassword: this.decryptPassword(password.originalDecryptedPassword || ''),
+      };
+      // Save the updated password store to local storage
       this.saveToLocalStorage();
     }
   }
